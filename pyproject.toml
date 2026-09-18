@@ -1,0 +1,94 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Project metadata
+# ─────────────────────────────────────────────────────────────────────────────
+[project]
+name = "vision"
+version = "0.1.0"
+description = "Network VAPT orchestrator with gated exploit advisory"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.10"
+authors = [
+    {name = "VISION", email = "vision@example.com"},
+]
+keywords = [
+    "vapt", "penetration-testing", "vulnerability-scanner",
+    "metasploit", "nmap", "nuclei", "offensive-security",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: System :: Networking",
+]
+
+# ─── Zero runtime deps: stdlib only. Everything else is detected at runtime. ───
+dependencies = []
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Optional dependency groups — install with:  pip install vision[dev,tools]
+# ─────────────────────────────────────────────────────────────────────────────
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]
+tools = [
+    "pipx>=1.0",           # preferred installer for security tools
+    "golang-go",           # go install for naabu, dnsx, subfinder, kerbrute
+]
+
+[project.scripts]
+# Main entry point:  vision <subcommand>
+vision = "vision.cli:main"
+
+[project.urls]
+Homepage      = "https://github.com/vision/vision"
+Documentation = "https://vision.readthedocs.io"
+Repository    = "https://github.com/vision/vision"
+"Bug Tracker" = "https://github.com/vision/vision/issues"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Packaging
+# ─────────────────────────────────────────────────────────────────────────────
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["vision*"]
+
+[tool.setuptools.package-data]
+vision = ["py.typed"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Code quality
+# ─────────────────────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["vision", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]   # line length handled by formatter
+
+[tool.ruff.lint.isort]
+known-first-party = ["vision"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Test runner
+# ─────────────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"

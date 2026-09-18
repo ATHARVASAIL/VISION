@@ -1,0 +1,5 @@
+{"services":[{"ip":"10.10.0.55","port":3306,"proto":"tcp","name":"mysql","product":"MySQL","version":"5.5.28","source":"nmap"}],
+"findings":[
+{"ip":"10.10.0.55","port":3306,"proto":"tcp","title":"MySQL auth bypass","severity":"critical","confidence":"firm","cves":["CVE-2012-2122"],"source":"nmap"},
+{"ip":"10.10.0.60","port":445,"proto":"tcp","title":"MS17-010 SMB RCE","severity":"critical","confidence":"firm","cves":["CVE-2017-0144"],"source":"nuclei"},
+{"ip":"10.10.0.61","port":80,"proto":"tcp","title":"Apache range DoS","severity":"medium","cves":["CVE-2011-3192"],"source":"nuclei"}]}

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<nmaprun scanner="nmap">
+<host><status state="up"/><address addr="192.168.56.101" addrtype="ipv4"/>
+<ports>
+<port protocol="tcp" portid="21"><state state="open"/>
+<service name="ftp" product="vsftpd" version="2.3.4"><cpe>cpe:/a:vsftpd:vsftpd:2.3.4</cpe></service>
+<script id="vulners" output="cpe:/a:vsftpd:vsftpd:2.3.4:&#10;  CVE-2011-2523  10.0  https://vulners.com/cve/CVE-2011-2523&#10;  VULNERABLE"/>
+</port>
+<port protocol="tcp" portid="3306"><state state="open"/>
+<service name="mysql" product="MySQL" version="5.0.51a-3ubuntu5"/>
+</port>
+<port protocol="tcp" portid="139"><state state="open"/>
+<service name="netbios-ssn" product="Samba smbd" version="3.0.20-Debian"/>
+<script id="smb-vuln-cve-2017-7494" output="VULNERABLE: SAMBA remote code execution&#10;  CVE-2017-7494  9.8"/>
+</port>
+<port protocol="tcp" portid="6667"><state state="open"/>
+<service name="irc" product="UnrealIRCd"/>
+</port>
+</ports>
+<hostscript><script id="smb-vuln-ms17-010" output="VULNERABLE: Remote Code Execution CVE-2017-0143"/></hostscript>
+</host>
+</nmaprun>

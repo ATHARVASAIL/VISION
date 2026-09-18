@@ -1,0 +1,56 @@
+# vision test lab — intentionally vulnerable services.
+#
+# ⚠ Every port is bound to 127.0.0.1 on purpose. Do not change these to
+#   0.0.0.0 — that publishes known-vulnerable services to your LAN.
+#
+#   docker compose up -d
+#   sudo nmap -sV -sC -p1-10000 -oX scan.xml 127.0.0.1
+#   docker compose down -v
+
+services:
+  # Old Apache + PHP — version-banner matching, TLS checks
+  web-legacy:
+    image: vulnerables/web-dvwa
+    ports: ["127.0.0.1:8080:80"]
+    restart: unless-stopped
+
+  # Outdated MySQL — exercises the product-name fallback path
+  mysql-old:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+    ports: ["127.0.0.1:3306:3306"]
+    restart: unless-stopped
+
+  # Old PostgreSQL
+  postgres-old:
+    image: postgres:9.6
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports: ["127.0.0.1:5432:5432"]
+    restart: unless-stopped
+
+  # Samba — SMB enumeration path
+  samba:
+    image: dperson/samba
+    command: -u "test;test123" -s "public;/share;yes;no;yes"
+    ports:
+      - "127.0.0.1:1139:139"
+      - "127.0.0.1:1445:445"
+    restart: unless-stopped
+
+  # FTP
+  ftp:
+    image: fauria/vsftpd
+    environment:
+      FTP_USER: test
+      FTP_PASS: test123
+    ports: ["127.0.0.1:2121:21"]
+    restart: unless-stopped
+
+  # Redis, no auth — very common real-world finding
+  redis-open:
+    image: redis:5.0
+    ports: ["127.0.0.1:6379:6379"]
+    restart: unless-stopped

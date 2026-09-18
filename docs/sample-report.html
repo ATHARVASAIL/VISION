@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Internal lab assessment — 192.168.56.0/24 — Vision report</title>
+<meta name="generator" content="Vision 0.1.0">
+<style>
+:root{
+  --paper:#FAFAF8; --ink:#14161A; --ink-soft:#4A4F57; --ink-faint:#7C828C;
+  --rule:#DEDFDA; --rule-soft:#EDEEE9; --field:#F2F2EE;
+  --accent:#1E3A5F;
+  --sev-critical:#8B1A1A; --sev-high:#C2410C; --sev-medium:#A16207;
+  --sev-low:#3F6212;      --sev-info:#64748B;
+  --serif:Charter,"Bitstream Charter","Sitka Text",Cambria,Georgia,serif;
+  --sans:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--serif); font-size:16px; line-height:1.6;
+}
+.wrap{max-width:60rem; margin:0 auto; padding:3rem 1.5rem 6rem}
+
+/* ---- masthead ---- */
+.masthead{border-bottom:2px solid var(--ink); padding-bottom:1.5rem; margin-bottom:2.5rem}
+.eyebrow{
+  font-family:var(--sans); font-size:.6875rem; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint);
+}
+.masthead h1{
+  font-family:var(--sans); font-size:clamp(1.9rem,4.5vw,2.75rem);
+  font-weight:680; letter-spacing:-.022em; line-height:1.1; margin:.4rem 0 1.25rem;
+}
+.meta{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));
+  gap:1rem 1.75rem; margin:0;
+}
+.meta dt{
+  font-family:var(--sans); font-size:.6875rem; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint);
+  margin-bottom:.15rem;
+}
+.meta dd{margin:0; font-family:var(--mono); font-size:.8125rem; word-break:break-word}
+
+/* ---- section ---- */
+section{margin:3.5rem 0}
+h2{
+  font-family:var(--sans); font-size:.8125rem; font-weight:660;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft);
+  padding-bottom:.5rem; border-bottom:1px solid var(--rule); margin:0 0 1.5rem;
+}
+h3{font-family:var(--sans); font-size:1.0625rem; font-weight:640; margin:0 0 .5rem;
+   letter-spacing:-.01em}
+p{margin:0 0 1rem; max-width:38rem}
+.lede{font-size:1.0625rem; color:var(--ink-soft)}
+
+/* ---- posture bar: the severity distribution as one continuous rule ---- */
+.posture{margin:0 0 1.75rem}
+.posture-bar{display:flex; height:.6rem; border-radius:1px; overflow:hidden;
+             background:var(--rule-soft)}
+.posture-bar span{display:block}
+.posture-key{
+  display:flex; flex-wrap:wrap; gap:1.25rem; margin-top:.85rem;
+  font-family:var(--sans); font-size:.75rem;
+}
+.posture-key b{
+  font-family:var(--mono); font-size:.9375rem; font-weight:600;
+  display:block; line-height:1.2;
+}
+.posture-key i{
+  display:inline-block; width:.5rem; height:.5rem; border-radius:50%;
+  margin-right:.4rem; vertical-align:.02rem;
+}
+.posture-key span{color:var(--ink-faint); font-style:normal}
+
+/* ---- tables ---- */
+table{width:100%; border-collapse:collapse; font-size:.8125rem}
+caption{
+  font-family:var(--sans); font-size:.75rem; color:var(--ink-faint);
+  text-align:left; padding-bottom:.6rem;
+}
+th{
+  font-family:var(--sans); font-size:.6875rem; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint);
+  text-align:left; padding:.45rem .75rem .45rem 0; border-bottom:1px solid var(--rule);
+  white-space:nowrap;
+}
+td{padding:.5rem .75rem .5rem 0; border-bottom:1px solid var(--rule-soft);
+   vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+td.data,th.data{font-family:var(--mono)}
+td.num{text-align:right; font-family:var(--mono)}
+
+/* ---- findings ---- */
+.finding{
+  border-left:3px solid var(--rule); padding:0 0 0 1.25rem; margin:0 0 2.5rem;
+  break-inside:avoid;
+}
+.finding-head{display:flex; flex-wrap:wrap; align-items:baseline;
+              gap:.6rem; margin-bottom:.35rem}
+.chip{
+  font-family:var(--sans); font-size:.625rem; font-weight:660;
+  letter-spacing:.1em; text-transform:uppercase;
+  padding:.18rem .45rem; border-radius:2px; color:#fff; white-space:nowrap;
+}
+.chip.ghost{background:none; color:var(--ink-faint); border:1px solid var(--rule);
+            padding:.13rem .4rem}
+.target{font-family:var(--mono); font-size:.8125rem; color:var(--ink-soft)}
+.finding p{font-size:.9375rem}
+
+/* provenance: which tool said this, and how sure it is */
+.provenance{
+  display:flex; flex-wrap:wrap; gap:.4rem 1.5rem; margin:.75rem 0;
+  font-family:var(--sans); font-size:.75rem; color:var(--ink-faint);
+}
+.provenance b{color:var(--ink-soft); font-family:var(--mono); font-weight:500}
+
+.evidence{
+  font-family:var(--mono); font-size:.75rem; line-height:1.55;
+  background:var(--field); border:1px solid var(--rule-soft); border-radius:2px;
+  padding:.7rem .85rem; margin:.75rem 0; overflow-x:auto;
+  white-space:pre-wrap; word-break:break-word; color:var(--ink-soft);
+}
+.fix{
+  border-top:1px solid var(--rule-soft); padding-top:.7rem; margin-top:.85rem;
+  font-size:.875rem;
+}
+.fix strong{
+  font-family:var(--sans); font-size:.6875rem; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint);
+  display:block; margin-bottom:.2rem;
+}
+.cve-list{font-family:var(--mono); font-size:.75rem}
+.cve-list a{color:var(--accent); text-decoration:none;
+            border-bottom:1px solid var(--rule)}
+.cve-list a:hover,.cve-list a:focus{border-bottom-color:var(--accent)}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);
+                                      outline-offset:2px}
+
+.chain{margin:.75rem 0; padding-left:1.15rem; font-size:.875rem;
+       color:var(--ink-soft)}
+.chain li{margin:.2rem 0}
+.chain b{font-family:var(--sans); font-size:.8125rem; color:var(--ink)}
+.empty{color:var(--ink-faint); font-style:italic}
+details summary{
+  cursor:pointer; font-family:var(--sans); font-size:.8125rem;
+  color:var(--ink-soft); padding:.3rem 0;
+}
+footer{
+  margin-top:5rem; padding-top:1.25rem; border-top:1px solid var(--rule);
+  font-family:var(--sans); font-size:.75rem; color:var(--ink-faint);
+}
+
+@media (max-width:34rem){
+  .wrap{padding:2rem 1.1rem 4rem}
+  table{font-size:.75rem}
+  th,td{padding-right:.5rem}
+}
+@media print{
+  :root{--paper:#fff; --field:#F5F5F2}
+  .wrap{max-width:none; padding:0}
+  section{margin:2rem 0}
+  .finding{break-inside:avoid; page-break-inside:avoid}
+  h2{break-after:avoid}
+  details{display:block}
+  details summary{display:none}
+  a[href^="http"]::after{content:" (" attr(href) ")"; font-size:.6875rem;
+                         color:var(--ink-faint); word-break:break-all}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;
+                                         transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Vulnerability assessment report</div>
+  <h1>Internal lab assessment — 192.168.56.0/24</h1>
+  <dl class="meta">
+    <div><dt>Scope</dt><dd>allow=[&#x27;192.168.56.0/24&#x27;] rfc1918-only</dd></div>
+    <div><dt>Operator</dt><dd>omkar</dd></div>
+    <div><dt>Generated</dt><dd>09 August 2026, 15:41 UTC</dd></div>
+    <div><dt>Hosts / services</dt><dd>6 / 11</dd></div>
+  </dl>
+</header>
+
+<section>
+  <h2>Summary</h2>
+  <div class="posture"><div class="posture-bar"><span style="width:30.7692%;background:var(--sev-critical)" title="Critical: 4"></span><span style="width:38.4615%;background:var(--sev-high)" title="High: 5"></span><span style="width:15.3846%;background:var(--sev-medium)" title="Medium: 2"></span><span style="width:7.6923%;background:var(--sev-low)" title="Low: 1"></span><span style="width:7.6923%;background:var(--sev-info)" title="Informational: 1"></span></div><div class="posture-key"><div><b>4</b><span><i style="background:var(--sev-critical)"></i>Critical</span></div><div><b>5</b><span><i style="background:var(--sev-high)"></i>High</span></div><div><b>2</b><span><i style="background:var(--sev-medium)"></i>Medium</span></div><div><b>1</b><span><i style="background:var(--sev-low)"></i>Low</span></div><div><b>1</b><span><i style="background:var(--sev-info)"></i>Informational</span></div></div></div>
+  <p class="lede">9 findings rated high or critical require attention before the next review cycle. In total, 13 findings across 11 open services on 6 hosts. Findings marked <em>tentative</em> were inferred from a version banner and have not been verified against the running service; treat them as leads for manual confirmation rather than as confirmed exposures.</p>
+</section>
+
+<section><h2>Attack paths &middot; 8</h2><p class="lede">These findings combine into the sequences below. Breaking any one step in a chain breaks the chain.</p><article class="finding path" style="border-left-color:var(--sev-critical)"><div class="finding-head"><span class="chip" style="background:var(--sev-critical)">Critical</span><h3>Exposed application secrets to backing data store on 192.168.56.103</h3></div><p>The exposed file typically contains the credentials the application uses for its own database, and that database is reachable on this host. Retrieving the file and connecting is two steps with no exploitation required — this is a configuration error that yields the data directly.</p><div class="provenance"><div>Outcome <b>Direct authenticated access to the application&#x27;s database</b></div><div>Confidence <b>confirmed</b></div></div><ol class="chain"><li><b>Application secrets exposed over HTTP</b> — Environment file exposed</li><li><b>Database service reachable on the same host</b> — MySQL 5.7 detected</li></ol><div class="fix"><strong>Remediation</strong>Block external access to dotfiles and version-control metadata at the web server, rotate every credential that was exposed, and restrict the database to application hosts only.</div></article><article class="finding path" style="border-left-color:var(--sev-critical)"><div class="finding-head"><span class="chip" style="background:var(--sev-critical)">Critical</span><h3>Unauthenticated SYSTEM via MS17-010 on 192.168.56.102</h3></div><p>MS17-010 grants SYSTEM on the target with no credentials and no user interaction. On a domain-joined host this is usually the shortest path from network access to domain compromise, since SYSTEM can read cached credentials and machine account secrets.</p><div class="provenance"><div>Outcome <b>SYSTEM-level code execution without credentials</b></div><div>Confidence <b>confirmed</b></div></div><ol class="chain"><li><b>MS17-010 present</b> — MS17-010 SMB remote code execution</li></ol><div class="fix"><strong>Remediation</strong>Apply MS17-010. If the host cannot be patched, disable SMBv1 and isolate it at the network layer.</div><div class="cve-list"><a href="https://attack.mitre.org/techniques/T1210/" rel="noopener noreferrer">https://attack.mitre.org/techniques/T1210/</a> </div></article><article class="finding path" style="border-left-color:var(--sev-critical)"><div class="finding-head"><span class="chip" style="background:var(--sev-critical)">Critical</span><h3>Unauthenticated Redis to remote code execution on 192.168.56.104</h3></div><p>An unauthenticated Redis instance accepts CONFIG SET, which lets an attacker relocate the dump file and write arbitrary content to disk — commonly an SSH authorized_keys entry or a cron job. This converts read access to the keyspace into code execution as whatever account Redis runs under.</p><div class="provenance"><div>Outcome <b>Command execution as the Redis service account</b></div><div>Confidence <b>confirmed</b></div></div><ol class="chain"><li><b>Redis reachable without authentication</b> — Redis exposed without authentication</li></ol><div class="fix"><strong>Remediation</strong>Set requirepass, bind Redis to localhost or a trusted interface, and enable protected-mode. Rename or disable CONFIG in production.</div></article><article class="finding path" style="border-left-color:var(--sev-critical)"><div class="finding-head"><span class="chip" style="background:var(--sev-critical)">Critical</span><h3>Anonymous write access to a file share on 192.168.56.101</h3></div><p>A writable anonymous share allows content to be placed on the host. Where the share backs a web root, a scripts directory, or a startup path, that becomes execution. Even where it does not, it enables planting lures for credential capture.</p><div class="provenance"><div>Outcome <b>Arbitrary file placement, and code execution where shares are executed</b></div><div>Confidence <b>confirmed</b></div></div><ol class="chain"><li><b>Writable share without authentication</b> — SMB shares accessible without authentication</li></ol><div class="fix"><strong>Remediation</strong>Remove anonymous access and require authentication on every share. Audit the filesystem paths the writable shares expose.</div></article><article class="finding path" style="border-left-color:var(--sev-high)"><div class="finding-head"><span class="chip" style="background:var(--sev-high)">High</span><h3>NTLM relay to authenticated SMB access on 192.168.56.101</h3></div><p>With SMB signing unenforced, an authentication attempt captured via name-resolution poisoning can be relayed to this host instead of being cracked offline. The relay inherits the victim&#x27;s privileges, so a single mistyped hostname on the network becomes authenticated access here.</p><div class="provenance"><div>Outcome <b>Authenticated access to file shares, and often code execution</b></div><div>Confidence <b>confirmed</b></div></div><ol class="chain"><li><b>SMB signing not enforced</b> — SMB signing not required</li><li><b>Name-resolution poisoning surface present</b> — SMB shares accessible without authentication</li></ol><div class="fix"><strong>Remediation</strong>Enforce SMB signing on all hosts, and disable LLMNR and NBT-NS via Group Policy so there is nothing to poison.</div><div class="cve-list"><a href="https://attack.mitre.org/techniques/T1557/001/" rel="noopener noreferrer">https://attack.mitre.org/techniques/T1557/001/</a> </div></article><article class="finding path" style="border-left-color:var(--sev-high)"><div class="finding-head"><span class="chip" style="background:var(--sev-high)">High</span><h3>SNMP disclosure to device credentials on 192.168.56.105</h3></div><p>A default community string exposes the full device MIB. On network equipment this routinely includes the running configuration, which carries local account hashes, SNMP write communities, and shared keys reused across the estate.</p><div class="provenance"><div>Outcome <b>Device configuration, and frequently credentials in cleartext</b></div><div>Confidence <b>confirmed</b></div></div><ol class="chain"><li><b>SNMP readable with a default community</b> — SNMP readable with default community &#x27;public&#x27;</li></ol><div class="fix"><strong>Remediation</strong>Replace default community strings, restrict SNMP by source address, and migrate to SNMPv3 with authentication and privacy.</div></article><article class="finding path" style="border-left-color:var(--sev-high)"><div class="finding-head"><span class="chip" style="background:var(--sev-high)">High</span><h3>World-readable NFS export to credential material on 192.168.56.106</h3></div><p>Unrestricted exports commonly contain home directories, which carry SSH private keys and shell history. With no_root_squash they also allow writing an authorized_keys file directly.</p><div class="provenance"><div>Outcome <b>Access to home directories, SSH keys and backups</b></div><div>Confidence <b>confirmed</b></div></div><ol class="chain"><li><b>NFS exports readable without restriction</b> — NFS exports world-readable</li></ol><div class="fix"><strong>Remediation</strong>Restrict exports to specific hosts, enable root_squash, and avoid exporting home directories where possible.</div></article><article class="finding path" style="border-left-color:var(--sev-high)"><div class="finding-head"><span class="chip" style="background:var(--sev-high)">High</span><h3>Cleartext protocol to credential capture and reuse on 192.168.56.101</h3></div><p>Credentials sent over these protocols are recoverable by anyone positioned on the path. Because administrators reuse credentials across systems, a single capture typically unlocks more than the service it was taken from.</p><div class="provenance"><div>Outcome <b>Captured credentials, usable wherever they are reused</b></div><div>Confidence <b>firm</b></div></div><ol class="chain"><li><b>Credentials traverse the network in cleartext</b> — Telnet exposed without transport encryption</li><li><b>A second host accepts the same credentials in principle</b> — vsftpd 2.3.4 backdoor command execution</li></ol><div class="fix"><strong>Remediation</strong>Retire cleartext protocols in favour of SSH, SFTP and TLS-wrapped equivalents, and rotate any credential that has traversed them.</div></article></section>
+
+<section>
+  <h2>Findings by host</h2>
+  <table><caption>Hosts ordered by highest severity present</caption><thead><tr><th>Host</th><th class="num">Svcs</th><th class="num">Crit</th><th class="num">High</th><th class="num">Medi</th><th class="num">Low</th><th class="num">Info</th></tr></thead><tbody><tr><td class="data">192.168.56.101</td><td class="num">3</td><td class="num" style="color:var(--sev-critical)">1</td><td class="num" style="color:var(--sev-high)">2</td><td class="num" style="color:var(--sev-medium)">1</td><td class="num" style="color:var(--sev-low)">·</td><td class="num" style="color:var(--sev-info)">·</td></tr><tr><td class="data">192.168.56.103</td><td class="num">3</td><td class="num" style="color:var(--sev-critical)">1</td><td class="num" style="color:var(--sev-high)">1</td><td class="num" style="color:var(--sev-medium)">1</td><td class="num" style="color:var(--sev-low)">·</td><td class="num" style="color:var(--sev-info)">1</td></tr><tr><td class="data">192.168.56.102</td><td class="num">2</td><td class="num" style="color:var(--sev-critical)">1</td><td class="num" style="color:var(--sev-high)">·</td><td class="num" style="color:var(--sev-medium)">·</td><td class="num" style="color:var(--sev-low)">1</td><td class="num" style="color:var(--sev-info)">·</td></tr><tr><td class="data">192.168.56.104</td><td class="num">1</td><td class="num" style="color:var(--sev-critical)">1</td><td class="num" style="color:var(--sev-high)">·</td><td class="num" style="color:var(--sev-medium)">·</td><td class="num" style="color:var(--sev-low)">·</td><td class="num" style="color:var(--sev-info)">·</td></tr><tr><td class="data">192.168.56.105</td><td class="num">1</td><td class="num" style="color:var(--sev-critical)">·</td><td class="num" style="color:var(--sev-high)">1</td><td class="num" style="color:var(--sev-medium)">·</td><td class="num" style="color:var(--sev-low)">·</td><td class="num" style="color:var(--sev-info)">·</td></tr><tr><td class="data">192.168.56.106</td><td class="num">1</td><td class="num" style="color:var(--sev-critical)">·</td><td class="num" style="color:var(--sev-high)">1</td><td class="num" style="color:var(--sev-medium)">·</td><td class="num" style="color:var(--sev-low)">·</td><td class="num" style="color:var(--sev-info)">·</td></tr></tbody></table>
+</section>
+
+<section>
+  <h2>Findings</h2>
+  <h2 id="sev-critical">Critical &middot; 4</h2><article class="finding" style="border-left-color:var(--sev-critical)"><div class="finding-head"><span class="chip" style="background:var(--sev-critical)">Critical</span><h3>vsftpd 2.3.4 backdoor command execution</h3><span class="target">192.168.56.101:21</span></div><p>This build contains a maliciously introduced backdoor opening a root shell on port 6200.</p><div class="provenance"><div>Reported by <b>nmap:vulners</b></div><div>Confidence <b>confirmed</b> — Verified against the target</div><div>CVSS <b>10.0</b></div></div><div class="cve-list"><a href="https://nvd.nist.gov/vuln/detail/CVE-2011-2523" rel="noopener noreferrer">CVE-2011-2523</a></div><pre class="evidence">220 (vsFTPd 2.3.4)</pre><div class="fix"><strong>Remediation</strong>Replace the package from a trusted repository.</div></article><article class="finding" style="border-left-color:var(--sev-critical)"><div class="finding-head"><span class="chip" style="background:var(--sev-critical)">Critical</span><h3>MS17-010 SMB remote code execution</h3><span class="target">192.168.56.102:445</span></div><div class="provenance"><div>Reported by <b>nmap:smb-vuln-ms17-010</b></div><div>Confidence <b>confirmed</b> — Verified against the target</div><div>CVSS <b>9.3</b></div></div><div class="cve-list"><a href="https://nvd.nist.gov/vuln/detail/CVE-2017-0144" rel="noopener noreferrer">CVE-2017-0144</a></div><pre class="evidence">VULNERABLE: Remote Code Execution</pre><div class="fix"><strong>Remediation</strong>Apply MS17-010.</div></article><article class="finding" style="border-left-color:var(--sev-critical)"><div class="finding-head"><span class="chip" style="background:var(--sev-critical)">Critical</span><h3>Environment file exposed</h3><span class="target">192.168.56.103:8080</span></div><div class="provenance"><div>Reported by <b>web-assessment</b></div><div>Confidence <b>confirmed</b> — Verified against the target</div></div><pre class="evidence">GET /.env -&gt; 200; DB_PASSWORD=...</pre><div class="fix"><strong>Remediation</strong>Block external access to dotfiles.</div></article><article class="finding" style="border-left-color:var(--sev-critical)"><div class="finding-head"><span class="chip" style="background:var(--sev-critical)">Critical</span><h3>Redis exposed without authentication</h3><span class="target">192.168.56.104:6379</span></div><div class="provenance"><div>Reported by <b>datastore-exposure</b></div><div>Confidence <b>confirmed</b> — Verified against the target</div></div><pre class="evidence">+PONG</pre><div class="fix"><strong>Remediation</strong>Set requirepass and bind to localhost.</div></article><h2 id="sev-high">High &middot; 5</h2><article class="finding" style="border-left-color:var(--sev-high)"><div class="finding-head"><span class="chip" style="background:var(--sev-high)">High</span><h3>Telnet exposed without transport encryption</h3><span class="target">192.168.56.101:23</span></div><div class="provenance"><div>Reported by <b>banner-analysis</b></div><div>Confidence <b>firm</b> — Active check by a scanner</div></div><div class="fix"><strong>Remediation</strong>Disable Telnet.</div></article><article class="finding" style="border-left-color:var(--sev-high)"><div class="finding-head"><span class="chip" style="background:var(--sev-high)">High</span><h3>SMB shares accessible without authentication</h3><span class="target">192.168.56.101:445</span></div><div class="provenance"><div>Reported by <b>smbmap</b></div><div>Confidence <b>confirmed</b> — Verified against the target</div></div><pre class="evidence">tmp (READ, WRITE); opt (READ ONLY)</pre><div class="fix"><strong>Remediation</strong>Remove anonymous access.</div></article><article class="finding" style="border-left-color:var(--sev-high)"><div class="finding-head"><span class="chip" style="background:var(--sev-high)">High</span><h3>TLS certificate expired 84 days ago</h3><span class="target">192.168.56.103:8443</span></div><div class="provenance"><div>Reported by <b>tls-certificate</b></div><div>Confidence <b>confirmed</b> — Verified against the target</div></div><pre class="evidence">notAfter: May 17 2026</pre><div class="fix"><strong>Remediation</strong>Renew and deploy a current certificate.</div></article><article class="finding" style="border-left-color:var(--sev-high)"><div class="finding-head"><span class="chip" style="background:var(--sev-high)">High</span><h3>SNMP readable with default community &#x27;public&#x27;</h3><span class="target">192.168.56.105:161</span></div><div class="provenance"><div>Reported by <b>snmpwalk</b></div><div>Confidence <b>confirmed</b> — Verified against the target</div></div><pre class="evidence">SNMPv2-MIB::sysDescr.0 = STRING: Cisco IOS</pre><div class="fix"><strong>Remediation</strong>Migrate to SNMPv3.</div></article><article class="finding" style="border-left-color:var(--sev-high)"><div class="finding-head"><span class="chip" style="background:var(--sev-high)">High</span><h3>NFS exports world-readable</h3><span class="target">192.168.56.106:2049</span></div><div class="provenance"><div>Reported by <b>showmount</b></div><div>Confidence <b>confirmed</b> — Verified against the target</div></div><pre class="evidence">/srv/backup *</pre><div class="fix"><strong>Remediation</strong>Restrict exports and enable root_squash.</div></article><h2 id="sev-medium">Medium &middot; 2</h2><article class="finding" style="border-left-color:var(--sev-medium)"><div class="finding-head"><span class="chip" style="background:var(--sev-medium)">Medium</span><h3>SMB signing not required</h3><span class="target">192.168.56.101:445</span></div><div class="provenance"><div>Reported by <b>netexec</b></div><div>Confidence <b>confirmed</b> — Verified against the target</div></div><pre class="evidence">signing:False</pre><div class="fix"><strong>Remediation</strong>Enforce SMB signing.</div></article><article class="finding" style="border-left-color:var(--sev-medium)"><div class="finding-head"><span class="chip" style="background:var(--sev-medium)">Medium</span><h3>HTTP security headers missing</h3><span class="target">192.168.56.103:8080</span></div><div class="provenance"><div>Reported by <b>web-assessment</b></div><div>Confidence <b>confirmed</b> — Verified against the target</div></div><pre class="evidence">strict-transport-security; content-security-policy</pre><div class="fix"><strong>Remediation</strong>Set HSTS and CSP.</div></article><h2 id="sev-low">Low &middot; 1</h2><article class="finding" style="border-left-color:var(--sev-low)"><div class="finding-head"><span class="chip" style="background:var(--sev-low)">Low</span><h3>SSH permits password authentication</h3><span class="target">192.168.56.102:22</span></div><div class="provenance"><div>Reported by <b>nmap</b></div><div>Confidence <b>firm</b> — Active check by a scanner</div></div><div class="fix"><strong>Remediation</strong>Prefer key-based authentication.</div></article><h2 id="sev-info">Informational &middot; 1</h2><article class="finding" style="border-left-color:var(--sev-info)"><div class="finding-head"><span class="chip" style="background:var(--sev-info)">Informational</span><h3>MySQL 5.7 detected</h3><span class="target">192.168.56.103:3306</span></div><div class="provenance"><div>Reported by <b>nmap:version</b></div><div>Confidence <b>tentative</b> — Inferred from version or banner</div></div></article>
+</section>
+
+<section>
+  <h2>Open services</h2>
+  <table><caption>11 open service(s) across 6 host(s)</caption><thead><tr><th>Host</th><th>Port</th><th>Service</th><th>Product and version</th></tr></thead><tbody><tr><td class="data">192.168.56.101</td><td class="data">21/tcp</td><td class="data">ftp</td><td class="data">vsftpd 2.3.4</td></tr><tr><td class="data">192.168.56.101</td><td class="data">23/tcp</td><td class="data">telnet</td><td class="data">Linux telnetd</td></tr><tr><td class="data">192.168.56.101</td><td class="data">445/tcp</td><td class="data">microsoft-ds</td><td class="data">Samba smbd 3.0.20</td></tr><tr><td class="data">192.168.56.102</td><td class="data">22/tcp</td><td class="data">ssh</td><td class="data">OpenSSH 8.2p1</td></tr><tr><td class="data">192.168.56.102</td><td class="data">445/tcp</td><td class="data">microsoft-ds</td><td class="data">Windows Server 2008</td></tr><tr><td class="data">192.168.56.103</td><td class="data">3306/tcp</td><td class="data">mysql</td><td class="data">MySQL 5.7.33</td></tr><tr><td class="data">192.168.56.103</td><td class="data">8080/tcp</td><td class="data">http</td><td class="data">Apache httpd 2.4.29</td></tr><tr><td class="data">192.168.56.103</td><td class="data">8443/tcp</td><td class="data">https</td><td class="data">Apache httpd 2.4.29</td></tr><tr><td class="data">192.168.56.104</td><td class="data">6379/tcp</td><td class="data">redis</td><td class="data">Redis 5.0.7</td></tr><tr><td class="data">192.168.56.105</td><td class="data">161/tcp</td><td class="data">snmp</td><td class="data">—</td></tr><tr><td class="data">192.168.56.106</td><td class="data">2049/tcp</td><td class="data">nfs</td><td class="data">—</td></tr></tbody></table>
+</section>
+
+<section><h2>Control coverage</h2><p class="lede">Controls for which this assessment gathered evidence, and how many findings relate to each. This is an indicative mapping to support review — it is not a compliance determination, which requires defined scope, consideration of compensating controls, and a qualified assessor.</p><h3>MITRE ATT&amp;CK</h3><table><thead><tr><th>Control</th><th>Title</th><th class="num">Findings</th></tr></thead><tbody><tr><td class="data"><a href="https://attack.mitre.org/techniques/T1213/" rel="noopener noreferrer">T1213</a></td><td>Data from Information Repositories</td><td class="num">2</td></tr><tr><td class="data"><a href="https://attack.mitre.org/techniques/T1021/002/" rel="noopener noreferrer">T1021.002</a></td><td>SMB/Windows Admin Shares</td><td class="num">1</td></tr><tr><td class="data"><a href="https://attack.mitre.org/techniques/T1040/" rel="noopener noreferrer">T1040</a></td><td>Network Sniffing</td><td class="num">1</td></tr><tr><td class="data"><a href="https://attack.mitre.org/techniques/T1082/" rel="noopener noreferrer">T1082</a></td><td>System Information Discovery</td><td class="num">1</td></tr><tr><td class="data"><a href="https://attack.mitre.org/techniques/T1110/003/" rel="noopener noreferrer">T1110.003</a></td><td>Password Spraying</td><td class="num">1</td></tr><tr><td class="data"><a href="https://attack.mitre.org/techniques/T1210/" rel="noopener noreferrer">T1210</a></td><td>Exploitation of Remote Services</td><td class="num">1</td></tr><tr><td class="data"><a href="https://attack.mitre.org/techniques/T1552/001/" rel="noopener noreferrer">T1552.001</a></td><td>Credentials In Files</td><td class="num">1</td></tr><tr><td class="data"><a href="https://attack.mitre.org/techniques/T1557/001/" rel="noopener noreferrer">T1557.001</a></td><td>LLMNR/NBT-NS Poisoning and SMB Relay</td><td class="num">1</td></tr></tbody></table><h3>CIS Controls v8</h3><table><thead><tr><th>Control</th><th>Title</th><th class="num">Findings</th></tr></thead><tbody><tr><td class="data">12.6</td><td>Use secure network management and communication protocols</td><td class="num">2</td></tr><tr><td class="data">3.10</td><td>Encrypt sensitive data in transit</td><td class="num">2</td></tr><tr><td class="data">3.3</td><td>Configure data access control lists</td><td class="num">2</td></tr><tr><td class="data">4.1</td><td>Establish and maintain a secure configuration process</td><td class="num">2</td></tr><tr><td class="data">16.11</td><td>Leverage vetted modules for application security</td><td class="num">1</td></tr><tr><td class="data">4.6</td><td>Securely manage enterprise assets and software</td><td class="num">1</td></tr><tr><td class="data">4.8</td><td>Uninstall or disable unnecessary services</td><td class="num">1</td></tr><tr><td class="data">5.2</td><td>Use unique passwords</td><td class="num">1</td></tr><tr><td class="data">7.3</td><td>Perform automated operating system patch management</td><td class="num">1</td></tr></tbody></table><h3>PCI DSS v4.0</h3><table><thead><tr><th>Control</th><th>Title</th><th class="num">Findings</th></tr></thead><tbody><tr><td class="data">8.3.1</td><td>Strong authentication is required for all access</td><td class="num">3</td></tr><tr><td class="data">2.2</td><td>System components are configured and managed securely</td><td class="num">2</td></tr><tr><td class="data">4.2.1</td><td>Strong cryptography protects data in transit</td><td class="num">2</td></tr><tr><td class="data">6.4.1</td><td>Public-facing web applications are protected</td><td class="num">2</td></tr><tr><td class="data">7.2.1</td><td>Access is assigned based on least privilege</td><td class="num">2</td></tr><tr><td class="data">1.3</td><td>Network access to and from the CDE is restricted</td><td class="num">1</td></tr><tr><td class="data">11.3.1</td><td>Internal vulnerability scans are performed and resolved</td><td class="num">1</td></tr><tr><td class="data">2.2.5</td><td>Insecure services and protocols are justified and secured</td><td class="num">1</td></tr><tr><td class="data">6.3.3</td><td>Security patches are installed within a defined window</td><td class="num">1</td></tr></tbody></table><h3>OWASP Top 10 (2021)</h3><table><thead><tr><th>Control</th><th>Title</th><th class="num">Findings</th></tr></thead><tbody><tr><td class="data"><a href="https://owasp.org/Top10/A05_2021-Security_Misconfiguration/" rel="noopener noreferrer">A05:2021</a></td><td>Security Misconfiguration</td><td class="num">2</td></tr><tr><td class="data"><a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/" rel="noopener noreferrer">A01:2021</a></td><td>Broken Access Control</td><td class="num">1</td></tr><tr><td class="data"><a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/" rel="noopener noreferrer">A02:2021</a></td><td>Cryptographic Failures</td><td class="num">1</td></tr><tr><td class="data"><a href="https://owasp.org/Top10/A07_2021-Identification_and_Authentication_Failures/" rel="noopener noreferrer">A07:2021</a></td><td>Identification and Authentication Failures</td><td class="num">1</td></tr></tbody></table></section>
+
+<section>
+  <h2>Methodology</h2>
+  <table><caption>Every stage attempted, including those skipped for missing tooling</caption><thead><tr><th>Stage</th><th>Status</th><th class="num">Time</th><th>Detail</th></tr></thead><tbody><tr><td class="data">host-discovery</td><td>Completed</td><td class="num">2.1s</td><td></td></tr><tr><td class="data">port-scan</td><td>Completed</td><td class="num">51.2s</td><td>13 finding(s)</td></tr><tr><td class="data">banner-analysis</td><td>Completed</td><td class="num">0.1s</td><td>3 finding(s)</td></tr><tr><td class="data">smb-enumeration</td><td>Completed</td><td class="num">4.1s</td><td>1 finding(s)</td></tr><tr><td class="data">smb-shares</td><td>Completed</td><td class="num">6.8s</td><td>1 finding(s)</td></tr><tr><td class="data">rpc-enumeration</td><td>Completed</td><td class="num">3.2s</td><td></td></tr><tr><td class="data">snmp-enumeration</td><td>Completed</td><td class="num">9.4s</td><td>1 finding(s)</td></tr><tr><td class="data">nfs-exports</td><td>Completed</td><td class="num">2.1s</td><td>1 finding(s)</td></tr><tr><td class="data">ldap-anonymous-bind</td><td>Not run</td><td class="num">0.0s</td><td>no LDAP services found</td></tr><tr><td class="data">ike-vpn</td><td>Not run</td><td class="num">0.0s</td><td>no IKE services found</td></tr><tr><td class="data">datastore-exposure</td><td>Completed</td><td class="num">1.2s</td><td>1 finding(s)</td></tr><tr><td class="data">web-assessment</td><td>Completed</td><td class="num">3.4s</td><td>2 finding(s)</td></tr><tr><td class="data">web-exposed-paths</td><td>Completed</td><td class="num">5.1s</td><td>1 finding(s)</td></tr><tr><td class="data">tls-certificate</td><td>Completed</td><td class="num">1.9s</td><td>1 finding(s)</td></tr><tr><td class="data">tls-posture</td><td>Not run</td><td class="num">0.0s</td><td>sslscan not installed</td></tr><tr><td class="data">exploitdb-correlation</td><td>Completed</td><td class="num">38.2s</td><td>7 unique queries for 11 services</td></tr><tr><td class="data">nuclei</td><td>Not run</td><td class="num">0.0s</td><td>nuclei not installed</td></tr><tr><td class="data">tls-deep</td><td>Not run</td><td class="num">0.0s</td><td>testssl.sh not installed</td></tr><tr><td class="data">nmap-vuln-scripts</td><td>Completed</td><td class="num">287.0s</td><td>2 finding(s)</td></tr></tbody></table>
+</section>
+
+<footer>
+  Generated by Vision 0.1.0 on 09 August 2026, 15:41 UTC.
+  Findings marked tentative were inferred from service banners and require
+  manual confirmation. Exploitation was not performed as part of this scan.
+</footer>
+
+</div>
+</body>
+</html>

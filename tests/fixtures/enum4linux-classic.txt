@@ -1,0 +1,38 @@
+# vision evidence
+# stage:   smb-deep-enum
+# target:  192.168.88.128
+# command: /usr/bin/enum4linux -A -u '' -p '' 192.168.88.128
+# time:    2026-08-15T10:26:49-0400
+#------------------------------------------------------------
+Starting enum4linux v0.9.1 ( http://labs.portcullis.co.uk/application/enum4linux/ ) on Sat Aug 15 10:26:49 2026
+
+ =========================================( Target Information )=========================================
+
+Target ........... 192.168.88.128
+RID Range ........ 500-550,1000-1050
+Username ......... ''
+Password ......... ''
+Known Usernames .. administrator, guest, krbtgt, domain admins, root, bin, none
+
+
+ ===========================( Enumerating Workgroup/Domain on 192.168.88.128 )===========================
+
+
+[+] Got domain/workgroup name: WORKGROUP
+
+
+ ==================================( Session Check on 192.168.88.128 )==================================
+
+
+[+] Server 192.168.88.128 allows sessions using username '', password ''
+
+
+ ===============================( Getting domain SID for 192.168.88.128 )===============================
+
+Domain Name: WORKGROUP
+Domain Sid: (NULL SID)
+
+[+] Can't determine if host is part of domain or part of a workgroup
+
+enum4linux complete on Sat Aug 15 10:26:49 2026
+
