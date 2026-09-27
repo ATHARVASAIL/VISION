@@ -10,6 +10,18 @@
 
 from __future__ import annotations
 
+# Reconfigure stdout/stderr to UTF-8 on Windows before anything prints.
+# Python's default on Windows is cp1252, which cannot encode the HUD symbols
+# (◈, ●, ►, etc.) used throughout the UI.
+import sys as _sys
+if _sys.stdout.encoding and _sys.stdout.encoding.lower() not in ("utf-8", "utf8"):
+    try:
+        _sys.stdout.reconfigure(encoding="utf-8")
+        _sys.stderr.reconfigure(encoding="utf-8")
+    except (AttributeError, Exception):
+        pass
+del _sys
+
 import argparse
 import json
 import sys
