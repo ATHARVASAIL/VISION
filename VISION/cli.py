@@ -1,4 +1,4 @@
-"""vision — network VAPT orchestration.
+"""vision — network VAPT orchestration
 
   vision doctor    what's installed, what's missing, what you can do
   vision setup     install the missing toolchain
