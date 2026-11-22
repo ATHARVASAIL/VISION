@@ -2,9 +2,9 @@
 #
 # setup.sh — install and set up Vision in one command.
 #
-#   sudo ./setup.sh            install Vision and build the Metasploit index
-#   sudo ./setup.sh --tools    also install the full Kali toolchain (large: GBs)
-#   sudo ./setup.sh --minimal  just make `vision` runnable, nothing else
+#   sudo ./setup.sh            install Vision and build the Metasploit index.
+#   sudo ./setup.sh --tools    also install the full Kali toolchain (large: GBs).
+#   sudo ./setup.sh --minimal  just make `vision` runnable, nothing else.
 #
 # Vision has ZERO Python dependencies — it is pure standard library. So this
 # does not build a wheel, create a virtualenv, or run pip (the parts that broke
