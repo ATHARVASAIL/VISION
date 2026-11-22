@@ -1,0 +1,34 @@
+# ─── Engagement data — NEVER commit ──────────────────────────────────
+# Raw tool output, findings and logs describe a real client's network.
+# One committed run directory leaks it to anyone who clones the repo.
+vision-run/
+vision-recon/
+vision-audit.jsonl
+evidence/
+findings.json
+findings.csv
+report.html
+report.md
+state.json
+*.jsonl
+
+# The one report that IS meant to ship: the sanitised example.
+!docs/sample-report.html
+
+# ─── Python / build artefacts ────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+
+# ─── Editor / OS noise ───────────────────────────────────────────────
+.DS_Store
+*.swp
+.idea/
+.vscode/

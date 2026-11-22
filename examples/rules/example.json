@@ -1,0 +1,31 @@
+{
+  "chains": [
+    {
+      "id": "example.legacy-appliance",
+      "name": "Legacy appliance with a management interface exposed",
+      "outcome": "Administrative access to an unsupported device",
+      "severity": "high",
+      "scope": "host",
+      "steps": [
+        {
+          "label": "Unsupported firmware identified",
+          "title": "Outdated .*(ApplianceOS|LegacyFW)"
+        },
+        {
+          "label": "Management interface reachable",
+          "port": [
+            443,
+            8443,
+            10000
+          ],
+          "load_bearing": false
+        }
+      ],
+      "narrative": "The appliance runs firmware the vendor no longer patches, and its management interface is reachable from the assessed network.",
+      "remediation": "Replace the appliance or move its management interface onto an isolated network.",
+      "references": [
+        "https://attack.mitre.org/techniques/T1133/"
+      ]
+    }
+  ]
+}

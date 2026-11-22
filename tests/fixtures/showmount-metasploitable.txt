@@ -1,0 +1,8 @@
+# vision evidence
+# stage:   nfs-exports
+# target:  192.168.88.128
+# command: /usr/sbin/showmount -e 192.168.88.128
+# time:    2026-08-15T10:27:13-0400
+#------------------------------------------------------------
+Export list for 192.168.88.128:
+/ *

@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 646" width="900" height="646"
+     role="img" aria-label="A Vision session: one command runs a readiness check and a phased scan, findings announce themselves as they are discovered, thirteen findings reduce to six remediation actions, and the exploit advisory then refuses a destructive module and asks the operator to type the target IP before verifying another.">
+<title>Vision — one command, live findings, and a refusal</title>
+<style>
+  /* Palette is the tool's own ANSI 256 output converted to hex, so this shows
+     what Vision actually prints rather than an invented scheme. */
+  text{font-family:"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;font-size:12.5px}
+  .accent{fill:#5fd7ff} .green{fill:#87d787} .red{fill:#ff5f5f}
+  .yellow{fill:#ffd75f} .mag{fill:#d787d7} .grey{fill:#8a8a8a}
+  .white{fill:#eeeeee} .dim{fill:#5b6472}
+  .b{font-weight:600}
+
+  /* The resting state is the FINISHED frame; animation only reveals into it,
+     using `backwards` so the delay shows the start keyframe. A renderer that
+     ignores CSS animation — a PDF export, an editor preview — then shows the
+     complete session rather than an empty terminal. */
+  .l{opacity:1;animation:in .26s ease-out backwards}
+  @keyframes in{from{opacity:0}}
+
+  .spin{opacity:0;animation:spin 17s linear infinite}
+  @keyframes spin{0%,22%{opacity:1}24%,100%{opacity:0}}
+  .caret{animation:blink 1.06s steps(1) infinite}
+  @keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0}}
+
+  /* A README that blinks at someone who asked their OS not to is a bug. */
+  @media (prefers-reduced-motion:reduce){
+    .l{opacity:1;animation:none}.caret{opacity:1;animation:none}
+    .spin{opacity:0;animation:none}
+  }
+</style>
+
+<rect width="900" height="646" rx="10" fill="#12161c"/>
+<rect width="900" height="30" rx="10" fill="#1b212a"/>
+<rect y="18" width="900" height="14" fill="#1b212a"/>
+<circle cx="19" cy="15" r="5" fill="#ff5f5f" opacity=".8"/>
+<circle cx="37" cy="15" r="5" fill="#ffd75f" opacity=".8"/>
+<circle cx="55" cy="15" r="5" fill="#87d787" opacity=".8"/>
+<text x="450" y="19" class="dim" text-anchor="middle" style="font-size:11px">kali@lab — vision</text>
+
+<!-- Every column is an explicit x coordinate rather than padded spaces.
+     GitHub's SVG sanitiser strips, which collapsed the
+     alignment of every table in this demo when it rendered on the repo page.
+     Real geometry cannot be sanitised away. -->
+<g transform="translate(20,52)">
+
+  <text class="l" style="animation-delay:.2s">
+    <tspan x="0" class="green">$</tspan><tspan x="14" class="white">vision</tspan></text>
+
+  <text y="28" class="l" style="animation-delay:.7s">
+    <tspan x="0" class="accent">▸</tspan><tspan x="14" class="white b">Readiness</tspan>
+    <tspan x="110" class="dim">51/55 tools installed</tspan></text>
+  <text y="47" class="l" style="animation-delay:1.0s">
+    <tspan x="14" class="green">✓</tspan><tspan x="30" class="white">all core tools present</tspan></text>
+  <text y="66" class="l" style="animation-delay:1.3s">
+    <tspan x="14" class="green">✓</tspan><tspan x="30" class="white">Metasploit module index ready</tspan>
+    <tspan x="256" class="dim">2847 modules</tspan></text>
+
+  <text y="94" class="l" style="animation-delay:1.7s">
+    <tspan x="0" class="accent">▸</tspan><tspan x="14" class="white b">Phase 2</tspan>
+    <tspan x="90" class="dim">— Service Enumeration</tspan></text>
+  <text y="113" class="l" style="animation-delay:2.1s">
+    <tspan x="14" class="green">✓</tspan><tspan x="30" class="white">23 services</tspan>
+    <tspan x="140" class="dim">51.2s</tspan>
+    <tspan x="200" class="dim">+3 from supplementary ports</tspan></text>
+
+  <text y="141" class="l" style="animation-delay:2.5s">
+    <tspan x="0" class="accent">▸</tspan><tspan x="14" class="white b">Phase 3</tspan>
+    <tspan x="90" class="dim">— Deep Enumeration</tspan></text>
+  <text y="160" class="l spin" style="animation-delay:2.8s">
+    <tspan x="14" class="accent">⠹</tspan><tspan x="30" class="dim">running datastore-exposure…</tspan></text>
+
+  <!-- findings announce themselves as they land, not at the end -->
+  <text y="160" class="l" style="animation-delay:3.3s">
+    <tspan x="30" class="red b">CRITICAL</tspan>
+    <tspan x="106" class="accent">192.168.56.104:6379</tspan>
+    <tspan x="264" class="white">Redis exposed without authentication</tspan></text>
+  <text y="177" class="l" style="animation-delay:3.5s">
+    <tspan x="106" class="dim">+PONG · no credential required</tspan></text>
+  <text y="196" class="l" style="animation-delay:4.0s">
+    <tspan x="30" class="mag b">HIGH</tspan>
+    <tspan x="106" class="accent">192.168.56.101:445</tspan>
+    <tspan x="264" class="white">SMB shares accessible without authentication</tspan></text>
+  <text y="213" class="l" style="animation-delay:4.2s">
+    <tspan x="106" class="dim">backups (READ, WRITE); public (READ ONLY)</tspan></text>
+  <text y="232" class="l" style="animation-delay:4.7s">
+    <tspan x="14" class="green">✓</tspan><tspan x="30" class="white">8 findings</tspan>
+    <tspan x="140" class="dim">14.1s</tspan></text>
+
+  <text y="262" class="l" style="animation-delay:5.2s">
+    <tspan x="14" class="red b">4 critical</tspan><tspan x="110" class="mag">5 high</tspan>
+    <tspan x="180" class="yellow">3 medium</tspan><tspan x="266" class="grey">1 low</tspan></text>
+
+  <!-- a plan, not just a list -->
+  <text y="292" class="l" style="animation-delay:5.7s">
+    <tspan x="0" class="accent">▸</tspan><tspan x="14" class="white b">Remediation plan</tspan>
+    <tspan x="150" class="dim">13 findings reduce to 6 actions</tspan></text>
+  <text y="311" class="l" style="animation-delay:6.0s">
+    <tspan x="22" class="dim">#</tspan><tspan x="52" class="dim">WORST</tspan>
+    <tspan x="130" class="dim">HOSTS</tspan><tspan x="188" class="dim">FIXES</tspan>
+    <tspan x="248" class="dim">ACTION</tspan></text>
+  <text y="330" class="l" style="animation-delay:6.3s">
+    <tspan x="22" class="dim">1</tspan><tspan x="52" class="red">critical</tspan>
+    <tspan x="130" class="white">1</tspan><tspan x="188" class="white">1</tspan>
+    <tspan x="248" class="white">Set requirepass and bind Redis to localhost</tspan></text>
+  <text y="349" class="l" style="animation-delay:6.6s">
+    <tspan x="22" class="dim">2</tspan><tspan x="52" class="mag">high</tspan>
+    <tspan x="130" class="white">3</tspan><tspan x="188" class="white">3</tspan>
+    <tspan x="248" class="white">Restrict Telnet to trusted networks</tspan></text>
+
+  <text y="379" class="l" style="animation-delay:7.1s">
+    <tspan x="0" class="accent">▸</tspan><tspan x="14" class="white b">Exploit advisory</tspan>
+    <tspan x="150" class="dim">·</tspan><tspan x="168" class="dim">nothing has been run</tspan></text>
+  <text y="398" class="l" style="animation-delay:7.4s">
+    <tspan x="22" class="dim">#</tspan><tspan x="52" class="dim">SEV</tspan>
+    <tspan x="128" class="dim">RANK</tspan><tspan x="212" class="dim">SAFETY</tspan>
+    <tspan x="310" class="dim">MODULE</tspan></text>
+  <text y="417" class="l" style="animation-delay:7.7s">
+    <tspan x="22" class="dim">1</tspan><tspan x="52" class="red">critical</tspan>
+    <tspan x="128" class="white">Excellent</tspan><tspan x="212" class="green">verify-only</tspan>
+    <tspan x="310" class="white">exploit/unix/ftp/vsftpd_234_backdoor</tspan>
+    <tspan x="606" class="green b">chk</tspan></text>
+  <text y="436" class="l" style="animation-delay:8.0s">
+    <tspan x="22" class="dim">2</tspan><tspan x="52" class="red">critical</tspan>
+    <tspan x="128" class="white">Average</tspan><tspan x="212" class="red">destructive</tspan>
+    <tspan x="310" class="white">exploit/windows/smb/ms17_010_eternalblue</tspan>
+    <tspan x="640" class="red b">LOCK</tspan></text>
+
+  <!-- the refusal: the thesis of the whole tool -->
+  <text y="466" class="l" style="animation-delay:8.7s">
+    <tspan x="14" class="accent b">vision&gt;</tspan><tspan x="76" class="white">x 2</tspan></text>
+  <text y="485" class="l" style="animation-delay:9.2s">
+    <tspan x="14" class="red b">BLOCKED</tspan>
+    <tspan x="106" class="red">ms17_010_eternalblue is classed DESTRUCTIVE.</tspan></text>
+  <text y="504" class="l" style="animation-delay:9.4s">
+    <tspan x="106" class="dim">Re-run with --allow-destructive and written client approval.</tspan></text>
+
+  <text y="534" class="l" style="animation-delay:10.1s">
+    <tspan x="14" class="accent b">vision&gt;</tspan><tspan x="76" class="white">c 1</tspan></text>
+  <text y="562" class="l" style="animation-delay:10.7s">
+    <tspan x="14" class="white">Type the target IP (</tspan>
+    <tspan x="164" class="accent">192.168.56.101</tspan>
+    <tspan x="272" class="white">) to proceed:</tspan></text>
+  <rect x="372" y="552" width="7" height="13" fill="#eeeeee" class="caret l"
+        style="animation-delay:10.7s"/>
+</g>
+</svg>
