@@ -201,8 +201,18 @@ check("external mode skips Kerberos", "auth-kerberoast" in Pipeline.EXTERNAL_SKI
 check("external mode keeps web assessment", "web-assessment" not in Pipeline.EXTERNAL_SKIP)
 check("external mode keeps port scan", "port-scan" not in Pipeline.EXTERNAL_SKIP)
 check("external mode keeps nuclei", "nuclei" not in Pipeline.EXTERNAL_SKIP)
+# IKE/ISAKMP VPN endpoints are internet-facing, so external mode must keep the
+# stage; it self-gates on UDP 500 being discovered, so it stays quiet otherwise.
+check("external mode keeps ike-vpn (VPN gateways are external)",
+      "ike-vpn" not in Pipeline.EXTERNAL_SKIP)
 check("every EXTERNAL_SKIP name is a real stage",
       set(Pipeline.EXTERNAL_SKIP) <= {s for s, _ in Pipeline.STAGES})
+check("every LAN/AD stage except ike-vpn is skipped externally",
+      all(s in Pipeline.EXTERNAL_SKIP for s in
+          ("smb-enumeration", "smb-shares", "rpc-enumeration", "snmp-enumeration",
+           "nfs-exports", "ldap-anonymous-bind", "netbios-scan", "arp-discovery",
+           "kerberos-userenum", "auth-kerberoast", "auth-password-policy",
+           "auth-share-access", "auth-admin-sprawl")))
 
 from vision.cli import build_parser
 _p = build_parser()

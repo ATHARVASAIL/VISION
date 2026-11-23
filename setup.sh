@@ -2,9 +2,9 @@
 #
 # setup.sh — install and set up Vision in one command.
 #
-#   sudo ./setup.sh            install Vision and build the Metasploit index.
-#   sudo ./setup.sh --tools    also install the full Kali toolchain (large: GBs).
-#   sudo ./setup.sh --minimal  just make `vision` runnable, nothing else.
+#   sudo ./setup.sh            install Vision and build the Metasploit index
+#   sudo ./setup.sh --tools    also install the full Kali toolchain (large: GBs)
+#   sudo ./setup.sh --minimal  just make `vision` runnable, nothing else
 #
 # Vision has ZERO Python dependencies — it is pure standard library. So this
 # does not build a wheel, create a virtualenv, or run pip (the parts that broke
@@ -73,8 +73,31 @@ ok "python $PYV"
 
 # Sanity: the package must import from this checkout before we wire a launcher
 # to it. Run from / so the current directory can't mask a real problem.
-if ! ( cd / && PYTHONPATH="$REPO" "$PY" -c 'import vision.cli' 2>/dev/null ); then
-  bad "this checkout is incomplete — vision/ did not import from $REPO"
+import_ok() { ( cd / && PYTHONPATH="$REPO" "$PY" -c 'import vision.cli' 2>/dev/null ); }
+
+if ! import_ok; then
+  # Python's import is case-sensitive: `import vision` needs a directory named
+  # exactly "vision" (lowercase), because that is how every internal
+  # `from vision... import` resolves. A checkout whose package folder is
+  # "VISION" (or sits one level down) would otherwise force the operator to
+  # rename it by hand. Find the real package — the directory holding cli.py and
+  # core/ — whatever its case or depth, and expose it under the lowercase name
+  # with a symlink. Idempotent: ln -sfn replaces any stale link.
+  PKG=""
+  for cand in "$REPO"/*/ "$REPO"/*/*/; do
+    [[ -f "${cand}cli.py" && -d "${cand}core" ]] && { PKG="${cand%/}"; break; }
+  done
+  if [[ -n "$PKG" && "$(basename "$PKG")" != "vision" ]]; then
+    ln -sfn "$PKG" "$REPO/vision"
+    ok "found the package as $(basename "$PKG")/ — linked it to vision/ (case fix)"
+  fi
+fi
+
+if ! import_ok; then
+  bad "this checkout is incomplete — no importable 'vision' package under $REPO"
+  info "expected $REPO/vision/cli.py — this folder contains:"
+  ls -1 "$REPO" 2>/dev/null | sed 's/^/        /'
+  info "re-download and extract it fresh, then run ./setup.sh from inside it"
   exit 1
 fi
 ok "vision package imports cleanly"

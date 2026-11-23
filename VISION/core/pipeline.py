@@ -964,11 +964,17 @@ class Pipeline(EnrichmentStages, WebStages, ExtraStages,
     # run --external` skips them so an external scan stays on the surface that is
     # actually reachable (ports, web, TLS, CVEs) rather than hammering 445/tcp on
     # a host that will never answer it.
+    #
+    # ike-vpn is deliberately NOT here: an IKE/ISAKMP endpoint on UDP 500 is a
+    # classic internet-facing target (VPN concentrators), so it belongs in an
+    # external engagement. It already self-gates on UDP 500 being discovered, so
+    # it stays quiet on hosts without a VPN endpoint instead of being skipped
+    # wholesale.
     EXTERNAL_SKIP = frozenset({
         "arp-discovery", "netbios-scan",
         "smb-enumeration", "smb-shares", "smb-deep-enum", "smb-file-listing",
         "rpc-enumeration", "snmp-enumeration", "nfs-exports",
-        "ldap-anonymous-bind", "ike-vpn", "kerberos-userenum",
+        "ldap-anonymous-bind", "kerberos-userenum",
         "auth-admin-sprawl", "auth-share-access", "auth-password-policy",
         "auth-kerberoast",
     })
