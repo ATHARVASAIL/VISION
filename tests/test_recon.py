@@ -221,6 +221,14 @@ check("`vision recon` command is registered", _ns.func is r.cmd_recon)
 check("`vision run --external` flag parses", _p.parse_args(
     ["run", "--external", "--scope", "1.1.1.1"]).external is True)
 
+# firewall/IDS evasion flag is wired into both the run and menu commands
+check("`vision run --evade` flag parses", _p.parse_args(
+    ["run", "--evade", "--scope", "1.1.1.1"]).evade is True)
+check("`vision run` evade defaults off", _p.parse_args(
+    ["run", "--scope", "1.1.1.1"]).evade is False)
+check("`vision menu --evade` flag parses",
+      _p.parse_args(["menu", "--evade"]).evade is True)
+
 print("\n" + "=" * 52)
 print("ALL PASS" if not fails else f"FAILURES ({len(fails)}): " + ", ".join(fails))
 sys.exit(1 if fails else 0)

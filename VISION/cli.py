@@ -26,6 +26,7 @@ import argparse
 import json
 import sys
 import time
+from dataclasses import replace
 from pathlib import Path
 
 from .core import ui
@@ -230,6 +231,8 @@ def cmd_run(args) -> int:
     # summary twenty lines above where it was assigned, so `vision run` raised
     # NameError before it scanned anything.
     profile = get_profile("aggressive" if args.aggressive else args.intensity)
+    if getattr(args, "evade", False):
+        profile = replace(profile, evade=True)
     print(ui.banner(VERSION, compact=args.no_banner))
 
     print(ui.section("Engagement"))
@@ -285,10 +288,14 @@ def cmd_run(args) -> int:
     print(ui.section("Scanning", "recon and enumeration only — nothing is exploited"))
     t0 = time.time()
     skip = set(args.skip or [])
-    if getattr(args, "external", False):
+    external = bool(getattr(args, "external", False))
+    if external:
         skip |= Pipeline.EXTERNAL_SKIP
         print(ui.info("external mode — skipping LAN-only stages "
                       "(SMB, RPC, SNMP, NFS, LDAP, Kerberos, NetBIOS, ARP)"))
+    # Record how this scan was run for the report's methodology / reproducibility.
+    state.scan_config = {"profile": profile.name, "evade": profile.evade,
+                         "external": external}
     stages = [s for s in Pipeline.STAGES if s[0] not in skip]
     for i, (name, method) in enumerate(stages, 1):
         if args.resume and name in state.completed():
@@ -337,6 +344,15 @@ def cmd_run(args) -> int:
                          f"{sev_count[sev]}")
     lines += ["", f"elapsed      {time.time() - t0:.0f}s"]
     print(ui.box(lines, title="results"))
+
+    # Hosts up but no port answered: likely firewalled. Point at evasion so an
+    # empty result is not misread as a clean target.
+    if state.live_hosts and not state.services and not profile.evade:
+        print("\n" + ui.warn("hosts are up but no ports responded — a firewall "
+                             "may be filtering the scan"))
+        print(ui.info("retry with firewall evasion:  "
+                      + paint("vision run --evade " + " ".join(sys.argv[2:]),
+                              S.ACCENT)))
 
     try:
         idx = MsfIndex.load_or_build(args.cache, args.msf_path or None)
@@ -690,6 +706,9 @@ def build_parser() -> argparse.ArgumentParser:
     sm.add_argument("--audit", default="./vision-audit.jsonl")
     sm.add_argument("--allow-destructive", action="store_true")
     sm.add_argument("--timeout", type=int, default=1800)
+    sm.add_argument("--evade", action="store_true",
+                    help="firewall/IDS evasion on scans (fragmentation, source "
+                         "port 53, payload padding; needs root)")
     sm.add_argument("--debug", action="store_true")
     sm.add_argument("--no-evidence", action="store_true")
     sm.add_argument("--no-preflight", action="store_true",
@@ -744,6 +763,10 @@ def build_parser() -> argparse.ArgumentParser:
                     help="internet-facing target: skip LAN-only stages (SMB, RPC, "
                          "SNMP, NFS, LDAP, Kerberos, NetBIOS, ARP) that an external "
                          "host never answers")
+    sr.add_argument("--evade", action="store_true",
+                    help="firewall/IDS evasion: add packet fragmentation, source "
+                         "port 53 and payload padding to the nmap scans so filtered "
+                         "services still surface (needs root; slower)")
     sr.add_argument("--skip", nargs="+")
     sr.add_argument("--timeout", type=int, default=1800)
     sr.add_argument("--min-rank", type=int, default=2)

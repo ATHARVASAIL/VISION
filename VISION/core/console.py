@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import os
 import time
+from dataclasses import replace
 from pathlib import Path
 from typing import Optional
 
@@ -509,8 +510,18 @@ class Console:
             if profile is None:
                 return False
 
+        # Firewall / IDS evasion. Offered after the intensity so an operator who
+        # already knows the target is filtered can turn it on; defaults off.
+        evade = getattr(self.args, "evade", False)
+        if not evade and not inline:
+            evade = ui.ask("Enable firewall/IDS evasion? (fragmentation, source "
+                           "port 53, payload padding — needs root)", default=False)
+        if evade:
+            profile = replace(profile, evade=True)
+
         print()
-        print(ui.kv("intensity", paint(profile.name, S.ACCENT)))
+        print(ui.kv("intensity", paint(profile.name, S.ACCENT)
+                    + (paint("  + evasion", S.YELLOW) if profile.evade else "")))
 
         # How long this will take, and which stages are worth skipping. An
         # operator choosing a profile is really asking "do I wait, or go and do
@@ -522,7 +533,8 @@ class Console:
                   else min(self.scope.address_count, 256))
         _est = _estimate(sorted(allowed), hosts=_hosts,
                          services=len(self.services),
-                         intensity=profile.name.lower())
+                         intensity=profile.name.lower(),
+                         evade=profile.evade)
         _lines = _describe(_est)
         print(ui.kv("time", paint(_lines[0].replace("estimated ", ""), S.ACCENT)
                     + paint("   estimate, not a guarantee", S.DIM)))
@@ -568,6 +580,9 @@ class Console:
         runlog = self.runlog
         # Dates come from the run itself rather than being typed twice.
         self.engagement.stamp_start()
+        # Record how this scan was run so the report can state the methodology
+        # and a retest can reproduce it.
+        self.state.scan_config = {"profile": profile.name, "evade": profile.evade}
         runlog.event("run-start", scope=self.scope.summary(), operator=self.operator)
         pipe = Pipeline(self.scope, self.workdir, self.state,
                         timeout=self.args.timeout, log=runlog, profile=profile)
@@ -663,6 +678,19 @@ class Console:
         if failures:
             print(ui.warn(f"{len(failures)} command(s) failed — see "
                           + paint(str(runlog.path), S.ACCENT)))
+        # Hosts answered discovery but no port did: a firewall is very likely
+        # dropping the probes. Point the operator at evasion rather than letting
+        # them read an empty result as "nothing here".
+        if (self.state.live_hosts and not self.services
+                and not getattr(profile, "evade", False)):
+            print(ui.warn("hosts are up but no ports responded — a firewall may "
+                          "be filtering the scan"))
+            print(ui.info("retry with evasion:  "
+                          + paint("fragmentation, source port 53 and payload "
+                                  "padding often get through", S.DIM)))
+            print(ui.info("  console: choose 'New assessment' and answer yes to "
+                          "evasion    ·    cli: "
+                          + paint("vision run --evade …", S.ACCENT)))
         if not getattr(self.args, "no_evidence", False):
             print(ui.info("evidence   "
                           + paint(str(self.workdir / "evidence"), S.ACCENT)
@@ -2011,19 +2039,33 @@ class Console:
             operator=self.operator,
             live_hosts=self.state.live_hosts if self.state else [],
             stages=self.state.stages if self.state else [],
+            scan_config=self.state.scan_config if self.state else None,
         )
 
     def _write_markdown(self) -> Path:
         order = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}
         fs = sorted(self.findings, key=lambda f: order.get(f.get("severity", "info"), 5))
+        cfg = self.state.scan_config if self.state else {}
+        method_bits = []
+        if cfg.get("profile"):
+            method_bits.append(f"{cfg['profile']} intensity")
+        if cfg.get("external"):
+            method_bits.append("external scope")
+        if cfg.get("evade"):
+            method_bits.append("firewall/IDS evasion")
         lines = [
-            "# Vision scan report", "",
+            "# Security Assessment Report", "",
             f"- **Scope:** {self.scope.summary() if self.scope else 'n/a'}",
             f"- **Operator:** {self.operator}",
             f"- **Date:** {time.strftime('%Y-%m-%d %H:%M %Z')}",
             f"- **Hosts:** {len(self.state.live_hosts) if self.state else 0}",
             f"- **Services:** {len(self.services)}",
-            f"- **Findings:** {len(fs)}", "",
+            f"- **Findings:** {len(fs)}",
+        ]
+        if method_bits:
+            lines.append(f"- **Scan method:** {', '.join(method_bits)}")
+        lines += [
+            "",
             "## Open services", "",
             "| Host | Port | Service | Version |", "|---|---|---|---|",
         ]

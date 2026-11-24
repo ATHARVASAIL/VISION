@@ -236,6 +236,26 @@ vision run --scope-file ext-engagement/recon-scope.txt --external
 LDAP, Kerberos, NetBIOS, ARP) that an internet-facing host never answers, so the
 scan stays on ports, web and TLS.
 
+### Firewall / IDS evasion
+
+`--evade` (on `vision run`, or the evasion prompt in the console) adds nmap's
+firewall/IDS-evasion techniques to every scan stage so services hidden behind a
+stateless packet filter or signature IDS still surface:
+
+| technique | flag | effect |
+|---|---|---|
+| packet fragmentation | `-f` | splits probes so a filter inspecting whole packets does not match |
+| source port 53 | `--source-port 53` | a firewall that trusts DNS replies may pass the probes |
+| payload padding | `--data-length 24` | random bytes so probes do not match a fixed-length signature |
+
+It needs raw-packet privileges, so run under `sudo`, and it is slower — leave it
+off unless a target is filtered. When a scan finds hosts up but no open ports,
+the summary recommends it.
+
+```bash
+sudo vision run --scope-file recon-scope.txt --external --evade
+```
+
 ---
 
 ## 2d. `vision run` — the automated pipeline

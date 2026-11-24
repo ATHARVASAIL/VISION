@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 346" width="900" height="346"
-     role="img" aria-label="Vision: network VAPT orchestration. 55 tools across six phases — discovery, enumeration, vulnerability scanning, exploitation, credentials, pivoting and traffic analysis — driven by 30 pure-Python modules with no runtime dependencies, covered by 1902 tests.">
+     role="img" aria-label="Vision: network VAPT orchestration. 55 tools across six phases — discovery, enumeration, vulnerability scanning, exploitation, credentials, pivoting and traffic analysis — driven by 30 pure-Python modules with no runtime dependencies, covered by 1929 tests.">
 <title>Vision — the stack it drives</title>
 <style>
   text{font-family:"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace}
@@ -73,7 +73,7 @@
   <text x="50" y="40" class="statlabel r" style="animation-delay:.95s">STAGES · 6 PHASES</text>
 
   <circle cx="0" cy="68" r="3" class="mag pip" style="animation-delay:1.8s"/>
-  <text x="14" y="73" class="statnum mag r" style="animation-delay:1.1s">1902</text>
+  <text x="14" y="73" class="statnum mag r" style="animation-delay:1.1s">1929</text>
   <text x="82" y="72" class="statlabel r" style="animation-delay:1.1s">TESTS · 27 SUITES</text>
 
   <circle cx="0" cy="100" r="3" class="yellow pip" style="animation-delay:2.4s"/>

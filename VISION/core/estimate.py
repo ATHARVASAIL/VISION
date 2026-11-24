@@ -150,12 +150,19 @@ def human(seconds: float) -> str:
     return f"{hours:.1f} hr"
 
 
+# Firewall evasion fragments packets and leans on retries, so the nmap stages
+# take noticeably longer. A moderate multiplier keeps the estimate honest.
+EVADE_FACTOR = 1.4
+
+
 def estimate(stages, hosts: int, services: int = 0,
-             intensity: str = "normal") -> Estimate:
+             intensity: str = "normal", evade: bool = False) -> Estimate:
     """Projected wall-clock for a set of stages.
 
     `services` is usually unknown before the scan; when it is zero a rough
-    ratio is assumed so the figure is not silently optimistic.
+    ratio is assumed so the figure is not silently optimistic. `evade` applies
+    the firewall-evasion slowdown so the figure is not optimistic when the
+    fragmentation/padding flags are in play.
     """
     hosts = max(1, int(hosts or 1))
     if not services:
@@ -164,6 +171,8 @@ def estimate(stages, hosts: int, services: int = 0,
         services = hosts * 6
 
     factor = INTENSITY_FACTOR.get(str(intensity).lower(), 1.0)
+    if evade:
+        factor *= EVADE_FACTOR
     per_stage, total = {}, 0.0
     for name in stages:
         base, per_host, per_service = STAGE_COST.get(name, DEFAULT_COST)

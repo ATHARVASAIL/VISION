@@ -87,15 +87,15 @@ Unchanged from the original design and enforced in code, not documentation:
 | `test_security` | 49 | Injection, XXE, path traversal, terminal escapes, file permissions |
 | `test_accuracy` | 66 | Version logic, concurrency, false-positive suppression |
 | `test_edge` | 84 | Malformed input, corrupt state, resource limits, fuzz |
-| `test_report` | 67 | Report escaping, completeness, print output, scale |
+| `test_report` | 73 | Report escaping, completeness, print output, scale, scan-method reproducibility |
 | `test_web` | 51 | Web/datastore detection, false positives, scanner self-defence |
-| `test_recon` | 62 | DNS client, CT parsing, CDN classification, email security, takeover, header grading |
+| `test_recon` | 67 | DNS client, CT parsing, CDN classification, email security, takeover, header grading, external-skip and evasion flags |
 | `test_correlate` | 93 | Attack-path chaining, confidence capping, retest diff |
 | `test_frameworks` | 77 | Control mapping accuracy, rule-file validation and sandboxing |
 | `test_runlog` | 87 | Credential redaction, evidence capture, thread-safe logging |
 | `test_parsers` | 106 | Tool output parsing across version and formatting variation |
 | `test_triage` | 50 | Analyst decisions, and that excluded findings are disclosed |
-| `test_profiles` | 81 | Intensity escalation, impact disclosure, and that intensity never relaxes a gate |
+| `test_profiles` | 94 | Intensity escalation, impact disclosure, firewall-evasion flags, and that intensity never relaxes a gate |
 | `test_remediation` | 48 | Action grouping, and that a critical never ranks below lesser findings |
 | `test_playbook` | 52 | Manual playbook narration, service/finding matching |
 | `test_manual` | 62 | Manually recorded findings, scope enforcement |
@@ -104,11 +104,11 @@ Unchanged from the original design and enforced in code, not documentation:
 | `test_engagement` | 76 | Session resume, engagement metadata, exclusion audit trail |
 | `test_manualrun` | 70 | Manual tool runner, output capture, evidence |
 | `test_realworld` | 62 | Fixtures from a real captured Metasploitable engagement |
-| `test_estimate` | 34 | Scan-duration estimation against measured real-run data |
+| `test_estimate` | 37 | Scan-duration estimation against measured real-run data, including the evasion slowdown |
 | `test_selfcheck` | 20 | Vision's own claims audited against its own code |
 | `test_toolchain_coverage` | 16 | Every registered tool resolves to an install plan or manual instructions |
 | `test_console_safety` | 10 | Confirmation prompts cannot be buried inside a spinner; live phase streaming is wired |
-| `test_regress` | 20 | Field-reported crashes stay fixed: file-target run-state, malformed findings files, bad target files |
+| `test_regress` | 22 | Field-reported crashes stay fixed: file-target run-state, malformed findings files, bad target files, scan-config round-trip |
 | `test_cvss` | 75 | CVSS v3.1 vector parsing and base scoring against official reference vectors; malformed vectors rejected |
 | `test_integration` | 48 | Full scan → report → advisory against a live target |
 | `test_docs` | 53 | Documentation numbers, commands and links checked against the code |

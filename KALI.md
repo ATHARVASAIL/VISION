@@ -147,6 +147,15 @@ vision exploit --findings ~/engagements/lab/findings.json \
 `run` scans and advises but never exploits. `exploit` starts in check-only mode
 and requires you to type the target IP to confirm each action.
 
+For an internet-facing target behind a firewall, add `--external` (skips the
+LAN-only stages) and, if a normal scan comes back empty, `--evade` (nmap packet
+fragmentation, source port 53 and payload padding so filtered services still
+surface — needs root, so run under `sudo`):
+
+```bash
+sudo vision run --scope-file ~/engagements/ext/recon-scope.txt --external --evade
+```
+
 ---
 
 ## Docker alternative

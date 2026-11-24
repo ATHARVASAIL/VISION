@@ -16,6 +16,7 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 from vision.core.estimate import (
     estimate, describe, human, STAGE_COST, STAGE_PARALLELISM, INTENSITY_FACTOR,
+    EVADE_FACTOR,
 )
 from vision.core.pipeline import Pipeline
 from vision.tools.nmap2findings import parse
@@ -112,6 +113,16 @@ else:
           any("backport" in f.get("remediation", "") for f in v))
     check("no duplicate service entries",
           len({(f["ip"], f["port"]) for f in v}) == len(v))
+
+# --- firewall evasion lengthens the estimate ---
+_stages = ["port-scan", "nuclei", "tls-posture"]
+_base = estimate(_stages, hosts=10, intensity="normal", evade=False)
+_evd = estimate(_stages, hosts=10, intensity="normal", evade=True)
+check("evasion makes the estimate longer", _evd.seconds > _base.seconds)
+check("evasion applies the documented factor",
+      abs(_evd.seconds - _base.seconds * EVADE_FACTOR) < 1.0)
+check("evade defaults off (no change when unset)",
+      estimate(_stages, hosts=10, intensity="normal").seconds == _base.seconds)
 
 print("\n" + "=" * 52)
 print("ALL PASS" if not fails else f"FAILURES ({len(fails)}): " + ", ".join(fails))

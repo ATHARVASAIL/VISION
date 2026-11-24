@@ -30,6 +30,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+# nmap's documented Firewall/IDS-evasion techniques, applied when a profile runs
+# in evade mode. These are packet-level, orthogonal to timing:
+#   -f               fragment the probe packets so a stateless packet filter or
+#                    signature IDS that inspects whole packets does not match.
+#   --source-port 53 send from port 53; a firewall mis-configured to trust DNS
+#                    replies may let the probes through.
+#   --data-length 24 pad probes with random bytes so they do not match a
+#                    fixed-length signature.
+# They need raw-packet privileges (run under sudo), which VISION scans already
+# assume. They make a scan slower and noisier, so they stay off unless asked.
+EVASION_FLAGS = ["-f", "--source-port", "53", "--data-length", "24"]
+
 
 @dataclass(frozen=True)
 class Impact:
@@ -60,6 +72,13 @@ class Profile:
     host_timeout: str = ""
     scripts: bool = True            # -sC default script set
 
+    # Firewall / IDS evasion. Off by default — these packet-level tricks help a
+    # scan reach services a stateless packet filter or signature IDS would
+    # otherwise hide on an external engagement, but they slow the scan and are
+    # pointless (even counterproductive) when nothing is filtering. Turned on
+    # with `--evade` / the console toggle, orthogonal to the timing profile.
+    evade: bool = False
+
     # vision
     workers: int = 12               # concurrent per-host probes
     max_hosts_per_stage: int = 128
@@ -88,6 +107,8 @@ class Profile:
                  "--version-intensity", str(self.version_intensity)]
         if self.host_timeout:
             flags += ["--host-timeout", self.host_timeout]
+        if self.evade:
+            flags += EVASION_FLAGS
         return flags
 
     def describe(self) -> list[str]:
@@ -99,6 +120,9 @@ class Profile:
             ("web paths", self.http_paths),
             ("snmp strings", self.snmp_communities),
         ]
+        if self.evade:
+            rows.append(("evasion",
+                         "on — fragmentation, source port 53, payload padding"))
         return [f"{k.ljust(16)}{v}" for k, v in rows]
 
 

@@ -577,6 +577,23 @@ def _executive(meta, findings: list[dict], services: list[dict],
     return (f'<section><h2>Executive summary</h2>{paras}{note}</section>')
 
 
+def _scan_method(scan_config: dict | None) -> str:
+    """A one-line, tool-neutral description of how the scan was run, for the
+    report's methodology. Empty when nothing was recorded."""
+    if not scan_config or not isinstance(scan_config, dict):
+        return ""
+    bits = []
+    prof = scan_config.get("profile")
+    if prof:
+        bits.append(f"{prof} intensity")
+    if scan_config.get("external"):
+        bits.append("external scope (LAN-only checks skipped)")
+    if scan_config.get("evade"):
+        bits.append("firewall/IDS evasion (packet fragmentation, "
+                    "source port 53, payload padding)")
+    return ", ".join(bits)
+
+
 def _engagement_meta(meta) -> str:
     """Client, authority and dates. Without these the document is a scan
     output rather than something a client can file."""
@@ -684,6 +701,7 @@ def build_report(
     engagement: str = "Network vulnerability assessment",
     tool_version: str = "0.1.0",
     meta=None,
+    scan_config: dict | None = None,
 ) -> str:
     findings = list(findings or [])
     services = list(services or [])
@@ -693,6 +711,7 @@ def build_report(
     host_count = len(live_hosts or {f.get("ip") for f in findings} | {
         s.get("ip") for s in services})
     generated = time.strftime("%d %B %Y, %H:%M %Z")
+    scan_method = _scan_method(scan_config)
 
     # Findings the analyst excluded are disclosed in an appendix rather than
     # dropped: a report that silently omits findings is indistinguishable from
@@ -747,6 +766,7 @@ def build_report(
     <div><dt>Operator</dt><dd>{e(operator or "—")}</dd></div>
     <div><dt>Generated</dt><dd>{e(generated)}</dd></div>
     <div><dt>Hosts / services</dt><dd>{host_count} / {len(services)}</dd></div>
+    {f'<div><dt>Scan method</dt><dd>{e(scan_method)}</dd></div>' if scan_method else ''}
   </dl>
 </header>
 

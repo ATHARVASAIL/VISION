@@ -72,6 +72,9 @@ class RunState:
     # Client, authority and dates. Not secret — unlike credentials, this is
     # exactly the sort of thing that should survive a crash.
     engagement: dict = field(default_factory=dict)
+    # How the scan was run — profile, evasion, external mode. Recorded so the
+    # report can state the methodology and a retest can reproduce it.
+    scan_config: dict = field(default_factory=dict)
 
     def save(self, path: Path) -> None:
         secure_write(path, json.dumps({
@@ -79,6 +82,7 @@ class RunState:
             "live_hosts": self.live_hosts, "services": self.services,
             "findings": self.findings, "stages": self.stages,
             "triage": self.triage, "engagement": self.engagement,
+            "scan_config": self.scan_config,
         }, indent=2))
 
     @classmethod
@@ -110,7 +114,7 @@ class RunState:
         defaults = {
             "scope": "", "started": time.time(), "workdir": ".",
             "live_hosts": [], "services": [], "findings": [], "stages": [],
-            "triage": {}, "engagement": {},
+            "triage": {}, "engagement": {}, "scan_config": {},
         }
         clean = {}
         for key, default in defaults.items():

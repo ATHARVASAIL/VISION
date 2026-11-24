@@ -617,6 +617,17 @@ vision run --scope-file ext-engagement/recon-scope.txt --external
 LDAP, Kerberos, NetBIOS, ARP) so the scan stays on the ports, web and TLS an
 internet host actually answers.
 
+When a target is behind a firewall or IDS and a normal scan comes back empty,
+add **`--evade`**. It layers nmap's firewall/IDS-evasion techniques — packet
+fragmentation, source port 53, and payload padding — onto every scan stage so
+filtered services still surface. It needs root (run under `sudo`) and is slower,
+so it stays off unless asked; the scan summary suggests it when hosts answer
+discovery but no port responds.
+
+```bash
+vision run --scope-file ext-engagement/recon-scope.txt --external --evade
+```
+
 > **Recon never decides scope for you.** It discovers; you authorise. Addresses
 > behind a CDN or a shared host belong to someone else, and the scope file keeps
 > them out of the scan unless you put them back in deliberately.

@@ -189,6 +189,23 @@ for label, path in [("broken JSON", broken), ("wrong top-level shape", wrongshap
         check(f"load_findings rejects {label} with ValueError", False,
               f"{type(e).__name__}: {e}")
 
+
+# ---------------------------------------------------------------------------
+# 5. scan_config (profile / evasion / external) round-trips through state
+#    save/load, so the report can state the methodology after a resume.
+# ---------------------------------------------------------------------------
+sd = Path(tempfile.mkdtemp())
+st = RunState(scope="203.0.113.0/24",
+              scan_config={"profile": "normal", "evade": True, "external": True})
+st.save(sd / "state.json")
+st_back = RunState.load(sd / "state.json")
+check("scan_config survives save/load",
+      st_back.scan_config == {"profile": "normal", "evade": True, "external": True})
+# an older state file without scan_config loads with an empty dict, not a crash
+(sd / "old.json").write_text(json.dumps({"scope": "x", "findings": []}))
+check("state file without scan_config loads cleanly",
+      RunState.load(sd / "old.json").scan_config == {})
+
 print("\n" + "=" * 52)
 print("ALL PASS" if not fails else f"FAILURES ({len(fails)}): " + ", ".join(fails))
 sys.exit(1 if fails else 0)

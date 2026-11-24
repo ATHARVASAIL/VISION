@@ -11,7 +11,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from vision.core.profiles import (
     PROFILES, DEFAULT, STEALTH, NORMAL, AGGRESSIVE, get,
     snmp_communities, SNMP_COMMON, SNMP_EXTENDED, PATHS_EXTENDED,
+    EVASION_FLAGS,
 )
+from dataclasses import replace
 from vision.core.pipeline import Pipeline, RunState
 from vision.core.scope import Scope
 
@@ -200,6 +202,32 @@ _used = min((n.lineno for n in _ast.walk(_fn)
              and isinstance(n.ctx, _ast.Load)), default=10**6)
 check("profile is assigned before it is used", _assigned < _used,
       f"assigned line {_assigned}, first used line {_used}")
+
+print("\n--- firewall / IDS evasion ---")
+# Evasion is off by default on every profile; nmap_flags must not carry the
+# evasion flags unless explicitly enabled.
+for p in (STEALTH, NORMAL, AGGRESSIVE):
+    check(f"{p.name}: evade off by default", p.evade is False)
+    check(f"{p.name}: no evasion flags when off",
+          not any(f in p.nmap_flags() for f in ("-f", "--data-length")))
+
+ev = replace(NORMAL, evade=True)
+flags = ev.nmap_flags()
+check("evade adds fragmentation (-f)", "-f" in flags)
+check("evade adds source-port 53",
+      "--source-port" in flags and flags[flags.index("--source-port") + 1] == "53")
+check("evade adds payload padding (--data-length)", "--data-length" in flags)
+check("evade keeps the base timing/rate flags",
+      "-T4" in flags and "--min-rate" in flags)
+# replace() must not mutate the shared singleton.
+check("enabling evade does not mutate the shared profile", NORMAL.evade is False)
+check("EVASION_FLAGS are the documented set",
+      EVASION_FLAGS == ["-f", "--source-port", "53", "--data-length", "24"])
+
+# The flags must actually reach a built nmap command line through nmap_flags().
+check("evasion flags flow through to a scan command",
+      all(f in (["nmap", "-sV", NORMAL.tcp_ports] + ev.nmap_flags())
+          for f in EVASION_FLAGS))
 
 print("\n" + "=" * 52)
 print("ALL PASS" if not fails else f"FAILURES ({len(fails)}): " + ", ".join(fails))

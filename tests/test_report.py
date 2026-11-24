@@ -256,6 +256,21 @@ check("the report uses the real phase vocabulary",
 check("findings keep plain professional wording",
       "Redis exposed without authentication" in _doc)
 
+# --- scan method (reproducibility) in the report metadata ---
+_cfg = {"profile": "normal", "evade": True, "external": True}
+_rc = build_report(findings=[], services=[], scope="203.0.113.0/24",
+                   scan_config=_cfg)
+check("report shows a Scan method row when config is recorded",
+      "Scan method" in _rc)
+check("report scan method names the intensity", "normal intensity" in _rc)
+check("report scan method notes evasion", "evasion" in _rc.lower())
+check("report scan method notes external scope", "external scope" in _rc)
+_rc_none = build_report(findings=[], services=[], scope="x")
+check("report omits Scan method when no config recorded",
+      "Scan method" not in _rc_none)
+check("report with scan config carries no tool branding",
+      "vision" not in _rc.lower())
+
 print("\n" + "=" * 52)
 print("ALL PASS" if not fails else f"FAILURES ({len(fails)}): " + ", ".join(fails))
 sys.exit(1 if fails else 0)
